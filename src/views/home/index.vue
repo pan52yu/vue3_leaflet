@@ -24,7 +24,7 @@ onMounted(() => {
     <h1>{{ userStore.name }}</h1>
     <a-button @click="changeName">修改名字</a-button>
     <a-button @click="count++">count is {{ count }}</a-button>
-    <a-button type="primary" value="large">Primary Button</a-button>
+    <a-button type="primary">Primary Button</a-button>
   </div>
 </template>
 

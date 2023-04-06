@@ -1,12 +1,12 @@
 module.exports = {
   root: true,
-  env: { // 环境
-    browser: true, // 浏览器环境
-    node: true, // node环境
-    es2021: true, // es2021环境
+  env: {
+    browser: true,
+    node: true,
+    es2021: true,
   },
-  parser: 'vue-eslint-parser', // 解析器
-  extends: [ // 继承的规则
+  parser: 'vue-eslint-parser',
+  extends: [
     'eslint:recommended',
     'plugin:vue/vue3-recommended',
     'plugin:@typescript-eslint/recommended',
@@ -14,31 +14,30 @@ module.exports = {
     // eslint-config-prettier 的缩写
     'prettier',
   ],
-  parserOptions: { // 解析器选项
-    ecmaVersion: 12, // ECMAScript版本
-    parser: '@typescript-eslint/parser', // 解析器
+  parserOptions: {
+    ecmaVersion: 12,
+    parser: '@typescript-eslint/parser',
     sourceType: 'module',
     ecmaFeatures: {
       jsx: true,
     },
   },
   // eslint-plugin-vue @typescript-eslint/eslint-plugin eslint-plugin-prettier的缩写
-  // 插件
   plugins: ['vue', '@typescript-eslint', 'prettier'],
-  rules: { // 规则
-    '@typescript-eslint/ban-ts-ignore': 'off', // 禁止使用@ts-ignore
-    '@typescript-eslint/no-unused-vars': 'off', // 禁止出现未使用过的变量
-    '@typescript-eslint/explicit-function-return-type': 'off', // 要求函数和类方法的显式返回类型
-    '@typescript-eslint/no-explicit-any': 'off', // 禁止使用any类型
-    '@typescript-eslint/no-var-requires': 'off', // 禁止使用require
-    '@typescript-eslint/no-empty-function': 'off', // 禁止出现空函数
-    '@typescript-eslint/no-use-before-define': 'off', // 禁止在变量定义之前使用它们
-    '@typescript-eslint/ban-ts-comment': 'off', // 禁止使用@ts-<directive>注释
-    '@typescript-eslint/ban-types': 'off', // 禁止使用指定的类型
-    '@typescript-eslint/no-non-null-assertion': 'off', // 禁止使用!后缀运算符
-    '@typescript-eslint/explicit-module-boundary-types': 'off', // 要求模块和类方法的显式返回类型
-    'no-var': 'error', // 要求使用 let 或 const 而不是 var
-    'prettier/prettier': 'error', 
+  rules: {
+    '@typescript-eslint/ban-ts-ignore': 'off',
+    '@typescript-eslint/no-unused-vars': 'off',
+    '@typescript-eslint/explicit-function-return-type': 'off',
+    '@typescript-eslint/no-explicit-any': 'off',
+    '@typescript-eslint/no-var-requires': 'off',
+    '@typescript-eslint/no-empty-function': 'off',
+    '@typescript-eslint/no-use-before-define': 'off',
+    '@typescript-eslint/ban-ts-comment': 'off',
+    '@typescript-eslint/ban-types': 'off',
+    '@typescript-eslint/no-non-null-assertion': 'off',
+    '@typescript-eslint/explicit-module-boundary-types': 'off',
+    'no-var': 'error',
+    'prettier/prettier': 'error',
     // 禁止出现console
     'no-console': 'warn',
     // 禁用debugger

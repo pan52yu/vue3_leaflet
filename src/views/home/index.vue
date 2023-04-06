@@ -6,7 +6,6 @@ export default {
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import { useUserStore } from '@/store/module/user'
-
 const count = ref(0)
 
 const userStore = useUserStore()
@@ -23,14 +22,18 @@ onMounted(() => {
 <template>
   <div class="card">
     <h1>{{ userStore.name }}</h1>
-    <button @click="changeName">修改名字</button>
-    <button type="button" @click="count++">count is {{ count }}</button>
+    <a-button @click="changeName">修改名字</a-button>
+    <a-button @click="count++">count is {{ count }}</a-button>
+    <a-button type="primary" value="large">Primary Button</a-button>
   </div>
 </template>
 
 <style lang="scss" scoped>
 button {
-  color: $test-color;
-  background: var(--main-bg-color);
+  font-size: 18px;
+  font-weight: 500;
+  margin-left: 10px;
+  // color: $test-color;
+  // background: var(--main-bg-color);
 }
 </style>

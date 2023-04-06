@@ -38,7 +38,7 @@ module.exports = {
     '@typescript-eslint/no-non-null-assertion': 'off', // 禁止使用!后缀运算符
     '@typescript-eslint/explicit-module-boundary-types': 'off', // 要求模块和类方法的显式返回类型
     'no-var': 'error', // 要求使用 let 或 const 而不是 var
-    'prettier/prettier': 'error', // 使用prettier格式化代码
+    'prettier/prettier': 'error', 
     // 禁止出现console
     'no-console': 'warn',
     // 禁用debugger

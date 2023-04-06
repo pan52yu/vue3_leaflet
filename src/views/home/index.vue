@@ -4,7 +4,7 @@ export default {
 }
 </script>
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useUserStore } from '@/store/module/user'
 
 const count = ref(0)
@@ -15,6 +15,9 @@ const userStore = useUserStore()
 const changeName = () => {
   userStore.setName('new name')
 }
+onMounted(() => {
+  console.log(import.meta.env)
+})
 </script>
 
 <template>

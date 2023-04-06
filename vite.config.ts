@@ -3,15 +3,25 @@ import vue from '@vitejs/plugin-vue'
 import path from 'path'
 import Components from 'unplugin-vue-components/vite'
 import { AntDesignVueResolver } from 'unplugin-vue-components/resolvers'
+import AutoImport from 'unplugin-auto-import/vite'
+import defineOptions from 'unplugin-vue-define-options/dist/vite'
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
     vue(),
     Components({
+      // 自动导入组件
       resolvers: [AntDesignVueResolver()],
       dts: 'src/type/components.d.ts',
     }),
+    AutoImport({
+      // 自动导入
+      imports: ['vue', 'vue-router', 'vue-i18n', '@vueuse/head', '@vueuse/core'],
+      // auto-import.d.ts生成的位置(默认是在根目录) 会在
+      dts: 'src/type/auto-import.d.ts',
+    }),
+    defineOptions(),
   ],
   server: {
     host: '0.0.0.0',

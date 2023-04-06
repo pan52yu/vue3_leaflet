@@ -1,11 +1,8 @@
-<script lang="ts">
-export default {
-  name: 'MyHome',
-}
-</script>
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
 import { useUserStore } from '@/store/module/user'
+defineOptions({
+  name: 'MyHome',
+})
 const count = ref(0)
 
 const userStore = useUserStore()

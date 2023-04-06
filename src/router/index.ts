@@ -11,6 +11,11 @@ const routes: Array<RouteRecordRaw> = [
     },
     component: () => import('../views/home/index.vue'),
   },
+  {
+    path: '/vueuse',
+    name: 'vueUse',
+    component: () => import('../views/vueuse/index.vue'),
+  },
 ]
 
 const router = createRouter({

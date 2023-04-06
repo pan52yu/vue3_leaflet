@@ -5,7 +5,7 @@ export default {
 </script>
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useUserStore } from '../../store/module/user'
+import { useUserStore } from '@/store/module/user'
 
 const count = ref(0)
 
@@ -25,4 +25,9 @@ const changeName = () => {
   </div>
 </template>
 
-<style scoped></style>
+<style lang="scss" scoped>
+button {
+  color: $test-color;
+  background: var(--main-bg-color);
+}
+</style>

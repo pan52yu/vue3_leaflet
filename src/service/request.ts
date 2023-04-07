@@ -1,5 +1,5 @@
 // https://juejin.cn/post/7036745610954801166#heading-22
-//http.ts
+//request.ts
 import axios, { AxiosRequestConfig } from 'axios'
 import NProgress from 'nprogress'
 // 设置请求头和请求路径
@@ -34,14 +34,14 @@ interface ResType<T> {
   msg: string
   err?: string
 }
-interface Http {
+interface Request {
   get<T>(url: string, params?: unknown): Promise<ResType<T>>
   post<T>(url: string, params?: unknown): Promise<ResType<T>>
   upload<T>(url: string, params: unknown): Promise<ResType<T>>
   download(url: string): void
 }
 
-const http: Http = {
+const request: Request = {
   get(url, params) {
     return new Promise((resolve, reject) => {
       NProgress.start()
@@ -99,4 +99,4 @@ const http: Http = {
     document.body.appendChild(iframe)
   },
 }
-export default http
+export default request

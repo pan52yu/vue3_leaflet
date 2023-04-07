@@ -1,5 +1,5 @@
 import { createApp } from 'vue'
-import './style.css'
+// import './style.css'
 import '@/styles/index.css'
 import 'normalize.css'
 import 'virtual:uno.css'

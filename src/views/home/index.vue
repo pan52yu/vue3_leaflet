@@ -18,6 +18,8 @@ onMounted(() => {
     zoom: 8,
     maxZoom: 10,
     minZoom: 7,
+    zoomControl: false,
+    style: 'background-color: transparent;', // 设置背景色为透明
   })
 
   const onEachFeature = function (feature, layer) {
@@ -29,11 +31,38 @@ onMounted(() => {
         iconSize: [100, 20],
       }),
     }).addTo(map)
+    layer.on({
+      // 鼠标移入事件
+      mouseover: function () {
+        // 高亮显示
+        layer.setStyle({
+          weight: 5,
+          color: '#666',
+          dashArray: '',
+          fillOpacity: 0.7,
+        })
+        // 鼠标移入时，将当前图层置于最上层
+        if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+          layer.bringToFront()
+        }
+      },
+      // 鼠标移出事件
+      mouseout: function () {
+        // 鼠标移出时，恢复默认样式
+        zheJiangLayer.resetStyle(this)
+      },
+      // 点击事件
+      click: function () {
+        // 自适应地图视图
+        map.fitBounds(layer.getBounds())
+        console.log(feature.properties.name)
+      },
+    })
   }
 
-  // L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  //   attribution: '&copy; <a href="javaScript:;">橙晖科技</a>提供技术支持',
-  // }).addTo(map)
+  L.tileLayer('', {
+    attribution: '&copy; <a href="javaScript:;">橙晖科技提供技术支持</a>',
+  }).addTo(map)
 
   const zheJiangData = zhejiang
   const zheJiangLayer = L.geoJSON(zheJiangData, {
@@ -41,26 +70,25 @@ onMounted(() => {
   }).addTo(map)
 
   map.fitBounds(zheJiangLayer.getBounds())
-
-  const bounds = zheJiangLayer.getBounds()
-  if (map.getBoundsZoom(bounds) > map.getMaxZoom()) {
-    map.fitBounds(bounds, {
-      maxZoom: map.getMaxZoom(),
-    })
-  } else {
-    map.fitBounds(bounds)
-  }
 })
 </script>
 
 <template>
-  <div ref="mapContainer" class="mapContainer"></div>
+  <div class="leaflet_map">
+    <div ref="mapContainer" class="mapContainer"></div>
+  </div>
 </template>
 
 <style lang="scss" scoped>
+.leaflet_map {
+  width: 100vw;
+  height: 100vh;
+  //background: #646cff;
+}
 .mapContainer {
   width: 100vw;
   height: 100vh;
+  background: transparent;
 }
 .label {
   font-size: 14px;

@@ -9,19 +9,47 @@ const mapContainer = ref(null)
 
 onMounted(() => {
   // 初始化地图
+  // const map = L.map(mapContainer.value, {
+  //   center: [30.245927, 120.154798],
+  //   zoom: 8,
+  // })
   const map = L.map(mapContainer.value, {
     center: [30.245927, 120.154798],
     zoom: 8,
+    maxZoom: 10,
+    minZoom: 7,
   })
 
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; <a href="javaScript:;">橙晖科技</a>提供技术支持',
+  const onEachFeature = function (feature, layer) {
+    const center = layer.getBounds().getCenter()
+    const label = L.marker(center, {
+      icon: L.divIcon({
+        className: 'label',
+        html: feature.properties.name,
+        iconSize: [100, 20],
+      }),
+    }).addTo(map)
+  }
+
+  // L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  //   attribution: '&copy; <a href="javaScript:;">橙晖科技</a>提供技术支持',
+  // }).addTo(map)
+
+  const zheJiangData = zhejiang
+  const zheJiangLayer = L.geoJSON(zheJiangData, {
+    onEachFeature: onEachFeature,
   }).addTo(map)
 
-  const chinaData = zhejiang
-  L.geoJSON(chinaData).addTo(map)
-  const bounds = L.latLngBounds(L.latLng(18.15, 73.5), L.latLng(53.5, 135.1))
-  map.setMaxBounds(bounds)
+  map.fitBounds(zheJiangLayer.getBounds())
+
+  const bounds = zheJiangLayer.getBounds()
+  if (map.getBoundsZoom(bounds) > map.getMaxZoom()) {
+    map.fitBounds(bounds, {
+      maxZoom: map.getMaxZoom(),
+    })
+  } else {
+    map.fitBounds(bounds)
+  }
 })
 </script>
 
@@ -33,5 +61,12 @@ onMounted(() => {
 .mapContainer {
   width: 100vw;
   height: 100vh;
+}
+.label {
+  font-size: 14px;
+  text-align: center;
+  color: #000;
+  font-weight: bold;
+  text-shadow: 0 0 5px #fff;
 }
 </style>

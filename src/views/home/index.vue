@@ -1,37 +1,37 @@
 <script setup lang="ts">
-import { useUserStore } from '@/store/module/user'
-
+import L from 'leaflet'
+import 'leaflet/dist/leaflet.css'
+import zhejiang from './zhejiang.json'
 defineOptions({
-  name: 'MyHome',
+  name: 'LeafletMap',
 })
-const count = ref(0)
+const mapContainer = ref(null)
 
-const userStore = useUserStore()
-
-// 修改名字
-const changeName = () => {
-  userStore.setName('new name')
-}
 onMounted(() => {
-  console.log(import.meta.env)
+  // 初始化地图
+  const map = L.map(mapContainer.value, {
+    center: [30.245927, 120.154798],
+    zoom: 8,
+  })
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="javaScript:;">橙晖科技</a>提供技术支持',
+  }).addTo(map)
+
+  const chinaData = zhejiang
+  L.geoJSON(chinaData).addTo(map)
+  const bounds = L.latLngBounds(L.latLng(18.15, 73.5), L.latLng(53.5, 135.1))
+  map.setMaxBounds(bounds)
 })
 </script>
 
 <template>
-  <div class="card">
-    <h1 class="color-red200">{{ userStore.name }}</h1>
-    <a-button @click="changeName">修改名字</a-button>
-    <a-button @click="count++">count is {{ count }}</a-button>
-    <a-button type="primary">Primary Button</a-button>
-  </div>
+  <div ref="mapContainer" class="mapContainer"></div>
 </template>
 
 <style lang="scss" scoped>
-button {
-  font-size: 18px;
-  font-weight: 500;
-  margin-left: 10px;
-  // color: $test-color;
-  // background: var(--main-bg-color);
+.mapContainer {
+  width: 100vw;
+  height: 100vh;
 }
 </style>

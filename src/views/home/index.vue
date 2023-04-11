@@ -16,6 +16,17 @@ const mapLayer = ref<any>(null)
 // 当前选中的地区
 const currentArea = ref('')
 
+const areaDensity = ref()
+const areaName = ref('')
+
+const DensityList = [0, 10, 20, 50, 100, 200, 500, 1000]
+
+const densityStyle = (value: number) => {
+  return {
+    backgroundColor: getColor(value),
+  }
+}
+
 // 地区中文名与英文名的映射
 const chineseToEnglishMap: ReadonlyArray<{ name: string; value: string }> = [
   { name: '杭州市', value: 'hangzhou' },
@@ -99,17 +110,59 @@ const styleMap = (feature: any) => {
 const getColor = (value: number) => {
   // 0-100 为白色，100-200 为蓝色，200-300 为橙色，300-400 为红色
   switch (true) {
-    case value <= 100:
-      return '#ffffff'
-    case value <= 200:
-      return '#2772d3'
-    case value <= 300:
-      return '#f7a35c'
-    case value <= 400:
-      return '#f15c80'
+    // case value <= 100:
+    //   return '#ffffff'
+    // case value <= 200:
+    //   return '#2772d3'
+    // case value <= 300:
+    //   return '#f7a35c'
+    // case value <= 400:
+    //   return '#f15c80'
+    // default:
+    //   return '#ffffff'
+    case value > 1000:
+      return 'rgba(128,0,38,1)'
+    case value > 500:
+      return 'rgba(189,0,38,1)'
+    case value > 200:
+      return 'rgba(227,26,28,1)'
+    case value > 100:
+      return 'rgba(252,78,42,1)'
+    case value > 50:
+      return 'rgba(253,141,60,1)'
+    case value > 20:
+      return 'rgba(254,178,76,1)'
+    case value > 10:
+      return 'rgba(254,217,118,1)'
     default:
-      return '#ffffff'
+      return 'rgba(255,255,204,1)'
   }
+}
+
+// 鼠标移入地图事件
+const mouseoverMap = (e: any) => {
+  const layer = e.target
+  areaDensity.value = areaData.value.find(
+    (item) => item.name === layer.feature.properties.name
+  )?.value
+  areaName.value = layer.feature.properties.name
+
+  layer.setStyle({
+    weight: 5,
+    color: '#2772d3',
+    fillColor: '#0532e8',
+    dashArray: '',
+    fillOpacity: 0.7,
+  })
+  if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+    layer.bringToFront()
+  }
+}
+// 鼠标移出地图事件
+const mouseoutMap = (e: any) => {
+  mapLayer.value.resetStyle(e.target)
+  areaDensity.value = 0
+  areaName.value = ''
 }
 
 // 地图事件
@@ -126,26 +179,8 @@ const onEachFeature = (feature: any, layer: any) => {
   }).addTo(map.value)
 
   layer.on({
-    mouseover: function () {
-      // 鼠标移入高亮显示
-      layer.setStyle({
-        // 线条宽度
-        weight: 5,
-        // 填充颜色
-        color: '#666',
-        // dashArray 是一个字符串，用于设置线条的虚线样式，例如 '5, 10, 15' 表示先绘制 5 像素的实线，再绘制 10 像素的空白，再绘制 15 像素的实线，然后再重复这个过程。
-        dashArray: '',
-        // 透明度
-        fillOpacity: 0.1,
-      })
-      if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
-        layer.bringToFront()
-      }
-    },
-    mouseout: function () {
-      // 鼠标移出恢复样式
-      mapLayer.value.resetStyle(this)
-    },
+    mouseover: mouseoverMap,
+    mouseout: mouseoutMap,
     click: async function () {
       const areaName = feature.properties.name
       // 加载地图
@@ -200,7 +235,21 @@ onMounted(() => {
 <template>
   <div class="leaflet_map">
     <!--  地图容器  -->
-    <div ref="mapContainer" class="mapContainer"></div>
+    <div ref="mapContainer" class="mapContainer">
+      <div
+        v-show="areaName !== ''"
+        class="absolute right-0 top-0 z-500 w-30 p-3 bg-[rgba(255,255,255,0.3)] text-base"
+      >
+        <div>值: {{ areaDensity }}</div>
+        <div>地区: {{ areaName }}</div>
+      </div>
+      <ul class="absolute right-[1.25rem] bottom-[1.875rem] z-500 p-4 text-lg">
+        <li v-for="(Density, index) in DensityList" :key="Density">
+          <span class="inline-block w-4 h-4 mr-2" :style="densityStyle(DensityList[index])"></span>
+          {{ DensityList[index + 1] ? `${Density}-${DensityList[index + 1]}` : `${Density}+` }}
+        </li>
+      </ul>
+    </div>
     <!--  左上角导航  -->
     <div class="navigation">
       <span @click="resetMap">浙江省</span>
@@ -219,6 +268,9 @@ onMounted(() => {
     width: 100%;
     height: 100%;
     background: transparent;
+    ul {
+      list-style: none;
+    }
   }
 
   .label {

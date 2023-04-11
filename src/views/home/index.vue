@@ -238,12 +238,12 @@ onMounted(() => {
     <div ref="mapContainer" class="mapContainer">
       <div
         v-show="areaName !== ''"
-        class="absolute right-0 top-0 z-500 w-30 p-3 bg-[rgba(255,255,255,0.3)] text-base"
+        class="absolute right-0 top-0 z-500 w-30 p-3 bg-[rgba(255,255,255,0.1)] text-base"
       >
         <div>值: {{ areaDensity }}</div>
         <div>地区: {{ areaName }}</div>
       </div>
-      <ul class="absolute right-[1.25rem] bottom-[1.875rem] z-500 p-4 text-lg">
+      <ul class="absolute right-[1.25rem] bottom-[1.875rem] z-500 p-4 text-base">
         <li v-for="(Density, index) in DensityList" :key="Density">
           <span class="inline-block w-4 h-4 mr-2" :style="densityStyle(DensityList[index])"></span>
           {{ DensityList[index + 1] ? `${Density}-${DensityList[index + 1]}` : `${Density}+` }}

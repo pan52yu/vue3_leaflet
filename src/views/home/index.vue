@@ -11,10 +11,20 @@ defineOptions({
 const mapContainer = ref(null)
 const map = ref<any>(null)
 const zheJiangLayer = ref<any>(null)
+const currentArea = ref('')
 
 const chineseToEnglishMap = [
   { name: '杭州市', value: 'hangzhou' },
   { name: '温州市', value: 'wenzhou' },
+  { name: '湖州市', value: 'huzhou' },
+  { name: '嘉兴市', value: 'jiaxing' },
+  { name: '宁波市', value: 'ningbo' },
+  { name: '绍兴市', value: 'shaoxing' },
+  { name: '金华市', value: 'jinhua' },
+  { name: '衢州市', value: 'quzhou' },
+  { name: '台州市', value: 'taizhou' },
+  { name: '丽水市', value: 'lishui' },
+  { name: '舟山市', value: 'zhoushan' },
 ]
 
 // 随机生成0-400的数据
@@ -23,17 +33,17 @@ const randomData = () => {
 }
 // 每个地区的数据，用于热力图展示
 const areaData = [
-  { name: '杭州市', value: randomData() },
-  { name: '温州市', value: randomData() },
-  { name: '湖州市', value: randomData() },
-  { name: '嘉兴市', value: randomData() },
-  { name: '宁波市', value: randomData() },
-  { name: '绍兴市', value: randomData() },
-  { name: '金华市', value: randomData() },
-  { name: '衢州市', value: randomData() },
-  { name: '台州市', value: randomData() },
-  { name: '丽水市', value: randomData() },
-  { name: '舟山市', value: randomData() },
+  { name: '杭州市', value: randomData() }, //   hangzhou
+  { name: '温州市', value: randomData() }, //   wenzhou
+  { name: '湖州市', value: randomData() }, //   huzhou
+  { name: '嘉兴市', value: randomData() }, //   jiaxing
+  { name: '宁波市', value: randomData() }, //   ningbo
+  { name: '绍兴市', value: randomData() }, //   shaoxing
+  { name: '金华市', value: randomData() }, //   jinhua
+  { name: '衢州市', value: randomData() }, //   quzhou
+  { name: '台州市', value: randomData() }, //   taizhou
+  { name: '丽水市', value: randomData() }, //   lishui
+  { name: '舟山市', value: randomData() }, //   zhoushan
 ]
 
 // 异步加载地图
@@ -73,7 +83,7 @@ const styleMap = (feature: any) => {
     fillColor: fillColor,
     weight: 1,
     opacity: 1,
-    color: 'white',
+    color: '#2772d3',
     dashArray: '3',
     fillOpacity: 0.7,
   }
@@ -101,7 +111,7 @@ const onEachFeature = (feature: any, layer: any) => {
     icon: L.divIcon({
       className: 'label',
       html: feature.properties.name,
-      iconSize: [100, 20],
+      iconSize: [50, 20],
     }),
   }).addTo(map.value)
 
@@ -132,6 +142,7 @@ const onEachFeature = (feature: any, layer: any) => {
         return
       }
       clearMap()
+      currentArea.value = areaName
       zheJiangLayer.value = L.geoJSON(area, {
         // 添加杭州地图图层
         onEachFeature: onEachFeature,
@@ -146,6 +157,7 @@ const onEachFeature = (feature: any, layer: any) => {
 // 重置地图
 const resetMap = () => {
   clearMap()
+  currentArea.value = ''
   zheJiangLayer.value = L.geoJSON(zhejiang, {
     onEachFeature: onEachFeature,
     style: styleMap,
@@ -173,7 +185,10 @@ onMounted(() => {
 <template>
   <div class="leaflet_map">
     <div ref="mapContainer" class="mapContainer"></div>
-    <button @click="resetMap">重置</button>
+    <div class="navigation">
+      <span @click="resetMap">浙江省</span>
+      <span v-if="currentArea"> > {{ currentArea }}</span>
+    </div>
   </div>
 </template>
 
@@ -182,11 +197,12 @@ onMounted(() => {
   width: 100vw;
   height: 100vh;
   background: #8a6060;
+  position: relative;
 }
 
 .mapContainer {
-  width: 90vw;
-  height: 90vh;
+  width: 100vw;
+  height: 100vh;
   background: transparent;
 }
 
@@ -199,5 +215,18 @@ onMounted(() => {
 }
 ::v-deep(.leaflet-bottom.leaflet-right) {
   display: none !important;
+}
+.navigation {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  span {
+    &:first-child {
+      cursor: pointer;
+      &:hover {
+        color: #fff;
+      }
+    }
+  }
 }
 </style>

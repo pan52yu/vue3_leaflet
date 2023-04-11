@@ -1,19 +1,23 @@
 <script setup lang="ts">
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
-// import 'leaflet/dist/leaflet.choropleth'
 import zhejiang from './areaJson/zhejiang.json'
 
 defineOptions({
   name: 'LeafletMap',
 })
 
+// 地图容器
 const mapContainer = ref(null)
+// 地图实例
 const map = ref<any>(null)
-const zheJiangLayer = ref<any>(null)
+// 地图图层
+const mapLayer = ref<any>(null)
+// 当前选中的地区
 const currentArea = ref('')
 
-const chineseToEnglishMap = [
+// 地区中文名与英文名的映射
+const chineseToEnglishMap: ReadonlyArray<{ name: string; value: string }> = [
   { name: '杭州市', value: 'hangzhou' },
   { name: '温州市', value: 'wenzhou' },
   { name: '湖州市', value: 'huzhou' },
@@ -32,19 +36,19 @@ const randomData = () => {
   return Math.round(Math.random() * 400)
 }
 // 每个地区的数据，用于热力图展示
-const areaData = [
-  { name: '杭州市', value: randomData() }, //   hangzhou
-  { name: '温州市', value: randomData() }, //   wenzhou
-  { name: '湖州市', value: randomData() }, //   huzhou
-  { name: '嘉兴市', value: randomData() }, //   jiaxing
-  { name: '宁波市', value: randomData() }, //   ningbo
-  { name: '绍兴市', value: randomData() }, //   shaoxing
-  { name: '金华市', value: randomData() }, //   jinhua
-  { name: '衢州市', value: randomData() }, //   quzhou
-  { name: '台州市', value: randomData() }, //   taizhou
-  { name: '丽水市', value: randomData() }, //   lishui
-  { name: '舟山市', value: randomData() }, //   zhoushan
-]
+const areaData = ref<{ name: string; value: number }[]>([
+  { name: '杭州市', value: randomData() },
+  { name: '温州市', value: randomData() },
+  { name: '湖州市', value: randomData() },
+  { name: '嘉兴市', value: randomData() },
+  { name: '宁波市', value: randomData() },
+  { name: '绍兴市', value: randomData() },
+  { name: '金华市', value: randomData() },
+  { name: '衢州市', value: randomData() },
+  { name: '台州市', value: randomData() },
+  { name: '丽水市', value: randomData() },
+  { name: '舟山市', value: randomData() },
+])
 
 // 异步加载地图
 const loadMap = async (area: string) => {
@@ -57,6 +61,7 @@ const loadMap = async (area: string) => {
   return import(url) // 返回地图数据
 }
 
+// 初始化地图
 const initMap = () => {
   map.value = L.map(mapContainer.value, {
     center: [30.245927, 120.154798],
@@ -66,17 +71,18 @@ const initMap = () => {
     zoomControl: false, // 隐藏地图缩放控件
   })
 
-  zheJiangLayer.value = L.geoJSON(zhejiang, {
+  mapLayer.value = L.geoJSON(zhejiang, {
     onEachFeature: onEachFeature,
     style: styleMap,
   }).addTo(map.value)
 
-  map.value.fitBounds(zheJiangLayer.value.getBounds())
+  map.value.fitBounds(mapLayer.value.getBounds())
 }
 
+// 地图样式 >>> 热力图
 const styleMap = (feature: any) => {
   const area = feature.properties.name
-  const areaValue = areaData.find((item) => item.name === area)?.value
+  const areaValue = areaData.value.find((item) => item.name === area)?.value
   const fillColor = areaValue ? getColor(areaValue) : '#2772d3'
 
   return {
@@ -89,6 +95,7 @@ const styleMap = (feature: any) => {
   }
 }
 
+// 根据数据值获取颜色
 const getColor = (value: number) => {
   // 0-100 为白色，100-200 为蓝色，200-300 为橙色，300-400 为红色
   switch (true) {
@@ -105,9 +112,12 @@ const getColor = (value: number) => {
   }
 }
 
+// 地图事件
 const onEachFeature = (feature: any, layer: any) => {
+  // 获取地图中心点
   const center = layer.getBounds().getCenter()
-  const label = L.marker(center, {
+  // 创建地区标签
+  L.marker(center, {
     icon: L.divIcon({
       className: 'label',
       html: feature.properties.name,
@@ -117,6 +127,7 @@ const onEachFeature = (feature: any, layer: any) => {
 
   layer.on({
     mouseover: function () {
+      // 鼠标移入高亮显示
       layer.setStyle({
         // 线条宽度
         weight: 5,
@@ -132,24 +143,28 @@ const onEachFeature = (feature: any, layer: any) => {
       }
     },
     mouseout: function () {
-      zheJiangLayer.value.resetStyle(this)
+      // 鼠标移出恢复样式
+      mapLayer.value.resetStyle(this)
     },
     click: async function () {
       const areaName = feature.properties.name
+      // 加载地图
       const area = await loadMap(areaName)
+      // 如果没有地图数据，直接返回
       if (!area) {
         map.value.fitBounds(layer.getBounds())
         return
       }
+      // 清空地图
       clearMap()
       currentArea.value = areaName
-      zheJiangLayer.value = L.geoJSON(area, {
-        // 添加杭州地图图层
+      // 添加地图
+      mapLayer.value = L.geoJSON(area, {
         onEachFeature: onEachFeature,
         style: styleMap,
       }).addTo(map.value)
 
-      map.value.fitBounds(zheJiangLayer.value.getBounds()) // 自适应地图视图
+      map.value.fitBounds(mapLayer.value.getBounds()) // 自适应地图视图
     },
   })
 }
@@ -158,11 +173,11 @@ const onEachFeature = (feature: any, layer: any) => {
 const resetMap = () => {
   clearMap()
   currentArea.value = ''
-  zheJiangLayer.value = L.geoJSON(zhejiang, {
+  mapLayer.value = L.geoJSON(zhejiang, {
     onEachFeature: onEachFeature,
     style: styleMap,
   }).addTo(map.value)
-  map.value.fitBounds(zheJiangLayer.value.getBounds()) // 自适应地图视图
+  map.value.fitBounds(mapLayer.value.getBounds()) // 自适应地图视图
 }
 
 // 清空地图
@@ -172,8 +187,8 @@ const clearMap = () => {
       map.value.removeLayer(layer)
     }
   })
-  if (zheJiangLayer.value) {
-    zheJiangLayer.value.clearLayers() // 清除浙江地图图层
+  if (mapLayer.value) {
+    mapLayer.value.clearLayers() // 清除浙江地图图层
   }
 }
 
@@ -184,7 +199,9 @@ onMounted(() => {
 
 <template>
   <div class="leaflet_map">
+    <!--  地图容器  -->
     <div ref="mapContainer" class="mapContainer"></div>
+    <!--  左上角导航  -->
     <div class="navigation">
       <span @click="resetMap">浙江省</span>
       <span v-if="currentArea"> > {{ currentArea }}</span>
@@ -196,35 +213,34 @@ onMounted(() => {
 .leaflet_map {
   width: 100vw;
   height: 100vh;
-  background: #8a6060;
+  background: rgba(31, 45, 180, 0.5);
   position: relative;
-}
+  .mapContainer {
+    width: 100%;
+    height: 100%;
+    background: transparent;
+  }
 
-.mapContainer {
-  width: 100vw;
-  height: 100vh;
-  background: transparent;
-}
-
-.label {
-  font-size: 14px;
-  text-align: center;
-  color: #000;
-  font-weight: 700;
-  text-shadow: 0 0 5px #fff;
-}
-::v-deep(.leaflet-bottom.leaflet-right) {
-  display: none !important;
-}
-.navigation {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  span {
-    &:first-child {
-      cursor: pointer;
-      &:hover {
-        color: #fff;
+  .label {
+    font-size: 14px;
+    text-align: center;
+    color: #000;
+    font-weight: 700;
+    text-shadow: 0 0 5px #fff;
+  }
+  ::v-deep(.leaflet-bottom.leaflet-right) {
+    display: none !important;
+  }
+  .navigation {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    span {
+      &:first-child {
+        cursor: pointer;
+        &:hover {
+          color: #fff;
+        }
       }
     }
   }

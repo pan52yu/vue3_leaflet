@@ -77,10 +77,17 @@ const initMap = () => {
   map.value = L.map(mapContainer.value, {
     center: [30.245927, 120.154798],
     zoom: 8,
-    maxZoom: 10,
+    maxZoom: 11,
     minZoom: 7,
     zoomControl: false, // 隐藏地图缩放控件
   })
+  // 设置浙江的边界坐标
+  const southWest = L.latLng(27, 118.0982)
+  const northEast = L.latLng(31.8545, 122.3011)
+  const bounds = L.latLngBounds(southWest, northEast)
+
+  // 设置地图最大边界为浙江
+  map.value.setMaxBounds(bounds)
 
   mapLayer.value = L.geoJSON(zhejiang, {
     onEachFeature: onEachFeature,
@@ -108,18 +115,7 @@ const styleMap = (feature: any) => {
 
 // 根据数据值获取颜色
 const getColor = (value: number) => {
-  // 0-100 为白色，100-200 为蓝色，200-300 为橙色，300-400 为红色
   switch (true) {
-    // case value <= 100:
-    //   return '#ffffff'
-    // case value <= 200:
-    //   return '#2772d3'
-    // case value <= 300:
-    //   return '#f7a35c'
-    // case value <= 400:
-    //   return '#f15c80'
-    // default:
-    //   return '#ffffff'
     case value > 1000:
       return 'rgba(128,0,38,1)'
     case value > 500:
@@ -142,9 +138,8 @@ const getColor = (value: number) => {
 // 鼠标移入地图事件
 const mouseoverMap = (e: any) => {
   const layer = e.target
-  areaDensity.value = areaData.value.find(
-    (item) => item.name === layer.feature.properties.name
-  )?.value
+  areaDensity.value =
+    areaData.value.find((item) => item.name === layer.feature.properties.name)?.value || 0
   areaName.value = layer.feature.properties.name
 
   layer.setStyle({
@@ -287,6 +282,7 @@ onMounted(() => {
     position: absolute;
     top: 10px;
     left: 10px;
+    z-index: 400;
     span {
       &:first-child {
         cursor: pointer;

@@ -14,6 +14,7 @@ const map = ref<any>(null)
 const zheJiangLayer = ref<any>(null)
 const mapStyle = {
   weight: 1,
+  fillOpacity: 0.6,
 }
 const chineseToEnglishMap = [
   { name: '杭州市', value: 'hangzhou' },
@@ -130,6 +131,7 @@ onMounted(() => {
 .leaflet_map {
   width: 100vw;
   height: 100vh;
+  background: #164aa6;
 }
 
 .mapContainer {
